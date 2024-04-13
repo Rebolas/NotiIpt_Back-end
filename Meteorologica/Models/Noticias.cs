@@ -11,8 +11,8 @@ namespace Meteorologica.Models
         [Key]
         public int Id { get; set; }
         public string? Titulo { get; set; }
-        public string? Imagem { get; set; }
         public string? Texto { get; set; }
+        public DateTime DataEscrita { get; set; }
         public ICollection<Utilizadores> ListaAutores { get; set; }
 
     }
