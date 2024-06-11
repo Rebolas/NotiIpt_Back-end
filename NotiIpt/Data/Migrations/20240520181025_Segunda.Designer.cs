@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotiIpt.Data;
 
@@ -11,9 +12,11 @@ using NotiIpt.Data;
 namespace NotiIpt.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240520181025_Segunda")]
+    partial class Segunda
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -257,28 +260,22 @@ namespace NotiIpt.Data.Migrations
 
             modelBuilder.Entity("NotiIpt.Models.Dados", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<DateTime>("DataHora")
+                        .HasColumnType("datetime2");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DataHora")
+                    b.Property<string>("EstadoDia")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float?>("Humidade")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Luz")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float?>("Temperatura")
-                        .HasColumnType("real");
-
-                    b.Property<int?>("lumino")
+                    b.Property<int>("Humidade")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("Luz")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Temperatura")
+                        .HasColumnType("int");
+
+                    b.HasKey("DataHora");
 
                     b.ToTable("Dados");
                 });

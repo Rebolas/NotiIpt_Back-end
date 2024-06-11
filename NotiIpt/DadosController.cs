@@ -21,16 +21,16 @@ namespace NotiIpt
             _context = context;
         }
 
-        // GET: api/Dados
+        // GET: api/Dados1
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Dados>>> GetDados()
         {
             return await _context.Dados.ToListAsync();
         }
 
-        // GET: api/Dados/5
+        // GET: api/Dados1/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Dados>> GetDados(DateTime id)
+        public async Task<ActionResult<Dados>> GetDados(int id)
         {
             var dados = await _context.Dados.FindAsync(id);
 
@@ -42,12 +42,12 @@ namespace NotiIpt
             return dados;
         }
 
-        // PUT: api/Dados/5
+        // PUT: api/Dados1/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDados(DateTime id, Dados dados)
+        public async Task<IActionResult> PutDados(int id, Dados dados)
         {
-            if (id != dados.DataHora)
+            if (id != dados.Id)
             {
                 return BadRequest();
             }
@@ -73,34 +73,20 @@ namespace NotiIpt
             return NoContent();
         }
 
-        // POST: api/Dados
+        // POST: api/Dados1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Dados>> PostDados(Dados dados)
         {
             _context.Dados.Add(dados);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (DadosExists(dados.DataHora))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDados", new { id = dados.DataHora }, dados);
+            return CreatedAtAction("GetDados", new { id = dados.Id }, dados);
         }
 
-        // DELETE: api/Dados/5
+        // DELETE: api/Dados1/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDados(DateTime id)
+        public async Task<IActionResult> DeleteDados(int id)
         {
             var dados = await _context.Dados.FindAsync(id);
             if (dados == null)
@@ -114,9 +100,9 @@ namespace NotiIpt
             return NoContent();
         }
 
-        private bool DadosExists(DateTime id)
+        private bool DadosExists(int id)
         {
-            return _context.Dados.Any(e => e.DataHora == id);
+            return _context.Dados.Any(e => e.Id == id);
         }
     }
 }

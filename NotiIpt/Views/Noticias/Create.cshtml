@@ -1,22 +1,42 @@
 ﻿@model NotiIpt.Models.Noticias
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Adicionar Notícia";
 }
 
-<h1>Create</h1>
+<h1>Adicionar Noticia</h1>
 
 <h4>Noticias</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+
+            @* este objeto irá levar os conteúdos do formulário
+            para o SERVIDOR
+            - o atributo 'method' define como os dados são enviados
+            - o atributo 'enctype' define que vamos enviar, também, ficheiros
+            *@
+            <form asp-action="Create"
+                  method="post"
+                  enctype="multipart/form-data">
+
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
+
+                    <!---aqui novo--->
+                    @* File Upload
+                    - não esquecer definir:
+                    - 'accept'' para ajudar os utilizadores a escolher o tipo certo de ficheiro
+                    - 'name' para acederem ao ficheiro no Servidor
+                    *@
+                    <input type="file" name="ImagemLogo" accept=".png,.jpg,.jpeg" class="form-control" />
             </div>
+
+                <br />
+
             <div class="form-group">
                 <label asp-for="Texto" class="control-label"></label>
                 <input asp-for="Texto" class="form-control" />
@@ -28,14 +48,18 @@
                 <span asp-validation-for="DataEscrita" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                    <!---aqui novo--->
+                    <input type="submit" value="Adicionar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+     <!---aqui novo--->
+    <br />
+    <a asp-action="Index">Regressar à listagem das Noticias</a>
+
 </div>
 
 @section Scripts {

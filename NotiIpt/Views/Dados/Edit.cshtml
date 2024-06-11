@@ -12,7 +12,12 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="DataHora" />
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="DataHora" class="control-label"></label>
+                <input asp-for="DataHora" class="form-control" />
+                <span asp-validation-for="DataHora" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Temperatura" class="control-label"></label>
                 <input asp-for="Temperatura" class="form-control" />
@@ -24,14 +29,14 @@
                 <span asp-validation-for="Humidade" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EstadoDia" class="control-label"></label>
-                <input asp-for="EstadoDia" class="form-control" />
-                <span asp-validation-for="EstadoDia" class="text-danger"></span>
+                <label asp-for="lumino" class="control-label"></label>
+                <input asp-for="lumino" class="form-control" />
+                <span asp-validation-for="lumino" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Luz" /> @Html.DisplayNameFor(model => model.Luz)
-                </label>
+            <div class="form-group">
+                <label asp-for="Luz" class="control-label"></label>
+                <input asp-for="Luz" class="form-control" />
+                <span asp-validation-for="Luz" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

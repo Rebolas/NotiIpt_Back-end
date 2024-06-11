@@ -28,14 +28,14 @@
                 <span asp-validation-for="Humidade" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EstadoDia" class="control-label"></label>
-                <input asp-for="EstadoDia" class="form-control" />
-                <span asp-validation-for="EstadoDia" class="text-danger"></span>
+                <label asp-for="lumino" class="control-label"></label>
+                <input asp-for="lumino" class="form-control" />
+                <span asp-validation-for="lumino" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Luz" /> @Html.DisplayNameFor(model => model.Luz)
-                </label>
+            <div class="form-group">
+                <label asp-for="Luz" class="control-label"></label>
+                <input asp-for="Luz" class="form-control" />
+                <span asp-validation-for="Luz" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

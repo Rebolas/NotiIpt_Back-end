@@ -26,7 +26,7 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Dados/Details/5
-        public async Task<IActionResult> Details(DateTime? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -34,7 +34,7 @@ namespace NotiIpt.Controllers
             }
 
             var dados = await _context.Dados
-                .FirstOrDefaultAsync(m => m.DataHora == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (dados == null)
             {
                 return NotFound();
@@ -54,7 +54,7 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DataHora,Temperatura,Humidade,EstadoDia,Luz")] Dados dados)
+        public async Task<IActionResult> Create([Bind("Id,DataHora,Temperatura,Humidade,lumino,Luz")] Dados dados)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Dados/Edit/5
-        public async Task<IActionResult> Edit(DateTime? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -86,9 +86,9 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(DateTime id, [Bind("DataHora,Temperatura,Humidade,EstadoDia,Luz")] Dados dados)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,DataHora,Temperatura,Humidade,lumino,Luz")] Dados dados)
         {
-            if (id != dados.DataHora)
+            if (id != dados.Id)
             {
                 return NotFound();
             }
@@ -102,7 +102,7 @@ namespace NotiIpt.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DadosExists(dados.DataHora))
+                    if (!DadosExists(dados.Id))
                     {
                         return NotFound();
                     }
@@ -117,7 +117,7 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Dados/Delete/5
-        public async Task<IActionResult> Delete(DateTime? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -125,7 +125,7 @@ namespace NotiIpt.Controllers
             }
 
             var dados = await _context.Dados
-                .FirstOrDefaultAsync(m => m.DataHora == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (dados == null)
             {
                 return NotFound();
@@ -137,7 +137,7 @@ namespace NotiIpt.Controllers
         // POST: Dados/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DateTime id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var dados = await _context.Dados.FindAsync(id);
             if (dados != null)
@@ -149,9 +149,9 @@ namespace NotiIpt.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DadosExists(DateTime id)
+        private bool DadosExists(int id)
         {
-            return _context.Dados.Any(e => e.DataHora == id);
+            return _context.Dados.Any(e => e.Id == id);
         }
     }
 }
