@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NotiIpt.Models
@@ -34,6 +35,7 @@ namespace NotiIpt.Models
         /// <summary>
         /// Chave forasteira para categoria associada à noticia
         /// </summary>
+        [Display(Name = "Categoria")]
         [ForeignKey(nameof(Categoria))]
         public int CategoriaFK  { get; set; }
         public Categorias Categoria { get; set; }

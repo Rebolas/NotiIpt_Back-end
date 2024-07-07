@@ -4,11 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
+<h1 class ="text-center">Fotos existentes</h1>
+<br/>
 <p>
-    <a asp-action="Create">Create New</a>
+    <form asp-action="Create" method="get">
+        <button type="submit" class="btn btn-primary">Adicionar Foto</button>
+    </form>
 </p>
+
 <table class="table">
     <thead>
         <tr>

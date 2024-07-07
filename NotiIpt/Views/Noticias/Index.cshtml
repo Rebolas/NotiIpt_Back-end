@@ -4,11 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
+<h1 class="text-center">Notícias existentes</h1>
+<br />
 <p>
-    <a asp-action="Create">Create New</a>
+    <form asp-action="Create" method="get">
+        <button type="submit" class="btn btn-primary">Criar Nova</button>
+    </form>
 </p>
+<br />
 <table class="table">
     <thead>
         <tr>
@@ -17,6 +20,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Texto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoriaFK)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DataEscrita)
@@ -32,6 +38,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Texto)
+            </td>
+            <td>
+               @item.Categoria.Categoria   
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DataEscrita)

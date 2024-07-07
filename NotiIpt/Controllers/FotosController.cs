@@ -44,6 +44,7 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Fotos/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -55,13 +56,22 @@ namespace NotiIpt.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome")] Fotos fotos)
-        {
+        {// [Bind] - anotação para indicar que dados, vindos da View,
+         //          devem ser 'aproveitados'
+
+            // avalia se os dados que chegam da View
+            // estão de acordo com o Model
             if (ModelState.IsValid)
             {
+                // adiciona os dados vindos da View à BD
                 _context.Add(fotos);
+                // efetua COMMIT na BD
                 await _context.SaveChangesAsync();
+                // redireciona o utilizador para a página Index
                 return RedirectToAction(nameof(Index));
             }
+            // se cheguei aqui é pq alguma coisa correu mal
+            // volta à View com os dados fornecidos pela View
             return View(fotos);
         }
 

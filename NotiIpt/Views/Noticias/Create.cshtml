@@ -4,12 +4,11 @@
     ViewData["Title"] = "Adicionar Notícia";
 }
 
-<h1>Adicionar Noticia</h1>
+<h1 class="text-center">Adicionar Noticia</h1>
 
-<h4>Noticias</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="d-flex justify-content-center">
+    <div class="col-md-6">
 
             @* este objeto irá levar os conteúdos do formulário
             para o SERVIDOR
@@ -25,14 +24,15 @@
 
             <div class="form-group">
                 <label asp-for="Titulo" class="control-label"></label>
-
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
                     <!---aqui novo--->
                     @* File Upload
                     - não esquecer definir:
                     - 'accept'' para ajudar os utilizadores a escolher o tipo certo de ficheiro
                     - 'name' para acederem ao ficheiro no Servidor
                     *@
-                    <input type="file" name="ImagemLogo" accept=".png,.jpg,.jpeg" class="form-control" />
+                    <!---input type="file" name="ListaFotos" accept=".png,.jpg,.jpeg" class="form-control" />--->
             </div>
 
                 <br />
@@ -42,11 +42,22 @@
                 <input asp-for="Texto" class="form-control" />
                 <span asp-validation-for="Texto" class="text-danger"></span>
             </div>
+            <br />
+            @Html.LabelFor(m => m.CategoriaFK)
+            <select class="form-select" asp-for="CategoriaFK" aria-label="Escolher Categoria">
+                <option value="@null">Selecione uma Categoria</option>
+                @foreach (var cat in ViewData["CategoriaFK"] as List<Categorias>)
+                {
+                    <option value="@cat.Id">@cat.Categoria</option>
+                }
+            </select>
+            <br />
             <div class="form-group">
                 <label asp-for="DataEscrita" class="control-label"></label>
                 <input asp-for="DataEscrita" class="form-control" />
                 <span asp-validation-for="DataEscrita" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                     <!---aqui novo--->
                     <input type="submit" value="Adicionar" class="btn btn-primary" />

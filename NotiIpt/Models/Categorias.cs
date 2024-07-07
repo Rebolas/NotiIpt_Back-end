@@ -20,7 +20,7 @@ namespace NotiIpt.Models
         /// <summary>
         /// Nome da categoria
         /// </summary>
-        public String Categoria { get; set; }
+        public string Categoria { get; set; }
         /// <summary>
         /// Lista de noticias associadas à categoria
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NotiIpt.Models
 {
@@ -9,6 +10,14 @@ namespace NotiIpt.Models
         /// </summary>
         public Fotos() {
             ListaNoticias = new HashSet<Noticias>();
+        }
+        /// <summary>
+        /// Construtor para inicializar o nome da foto
+        /// </summary>
+        [SetsRequiredMembers]
+        public Fotos(string nome) : this()
+        {
+            Nome = nome;
         }
         /// <summary>
         /// Chave Primária (PK)

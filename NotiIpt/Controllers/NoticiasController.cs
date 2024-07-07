@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using NotiIpt.Data;
 using NotiIpt.Models;
 
@@ -12,17 +15,26 @@ namespace NotiIpt.Controllers
 {
     public class NoticiasController : Controller
     {
+        /// <summary>
+        /// referência à BD do projeto
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
-        public NoticiasController(ApplicationDbContext context)
+        /// <summary>
+        /// objeto que contém os dados referentes ao ambiente 
+        /// do Servidor
+        /// </summary>
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public NoticiasController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Noticias
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Noticias.ToListAsync());
+            return View(await _context.Noticias.Include(c => c.Categoria).ToListAsync());
         }
 
         // GET: Noticias/Details/5
@@ -44,8 +56,9 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Noticias/Create
-        public IActionResult Create()
+        public async Task <IActionResult> Create()
         {
+            ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             return View();
         }
 
@@ -54,20 +67,86 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Titulo,Texto,DataEscrita")] Noticias noticias)
+        public async Task<IActionResult> Create([Bind("Titulo,Texto,DataEscrita,CategoriaFK")] Noticias noticias)
         {
+            ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
+            // [Bind] - anotação para indicar que dados, vindos da View,
+            //          devem ser 'aproveitados'
+
+            //Recebe ficheiro do utilizador
+            var Fotos = HttpContext.Request.Form.Files;
+            string msgErro = "";
+            //vars. auxiliares
+            string nomeImagem = "";
+            bool haImagem = false;
+            Dictionary<Fotos, IFormFile> mapFotos = new Dictionary<Fotos, IFormFile>();
+            //verifica se existe ficheiro
+            if (Fotos != null) 
+            {
+                foreach (var foto in Fotos)
+                {
+                    if (!(foto.ContentType == "image/png" || foto.ContentType == "image/jpeg"))
+                    {
+                        msgErro = "A imagem tem de ser do tipo png ou jpeg!";
+                        ModelState.AddModelError("Foto", msgErro);
+                        
+                    }
+                    else
+                    {
+                        Guid g = Guid.NewGuid();
+                        nomeImagem = g.ToString();
+                        // obter a extensão do nome do ficheiro
+                        string extensao = Path.GetExtension(foto.FileName);
+                        nomeImagem += extensao;
+                        Fotos f = new Fotos(nomeImagem);
+                        noticias.ListaFotos.Add(f);
+                        mapFotos.Add(f, foto);
+                        haImagem = true;
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(noticias);
                 await _context.SaveChangesAsync();
+                // se há ficheiro de imagem,
+                // vamos guardar no disco rígido do servidor
+                if (haImagem)
+                {
+                    // determinar onde se vai guardar a imagem
+                    string localImagem = _webHostEnvironment.WebRootPath;
+                    // já sei o caminho até à pasta wwwroot
+                    // especifico onde vou guardar a imagem
+                    localImagem = Path.Combine(localImagem, "Imagens");
+                    // e, existe a pasta 'Imagens'?
+                    if (!Directory.Exists(localImagem))
+                    {
+                        Directory.CreateDirectory(localImagem);
+                    }
+                    foreach (KeyValuePair<Fotos, IFormFile> i in mapFotos)
+                    {
+                        localImagem = Path.Combine(localImagem, i.Key.Nome);
+                        using var stream = new FileStream(
+                            localImagem, FileMode.Create);
+                        await i.Value.CopyToAsync(stream);
+                        localImagem = _webHostEnvironment.WebRootPath;
+                        localImagem = Path.Combine(localImagem, "Imagens");
+                    }
+                    //Acho que falta aqui coisas
+                }
+                // redireciona o utilizador para a página Index
                 return RedirectToAction(nameof(Index));
             }
+            // se cheguei aqui é pq alguma coisa correu mal
+            // volta à View com os dados fornecidos pela View
             return View(noticias);
         }
 
         // GET: Noticias/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             if (id == null)
             {
                 return NotFound();
@@ -86,8 +165,9 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Texto,DataEscrita")] Noticias noticias)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Texto,DataEscrita,CategoriaFK")] Noticias noticias)
         {
+            ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             if (id != noticias.Id)
             {
                 return NotFound();
