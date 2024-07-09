@@ -44,6 +44,7 @@ namespace NotiIpt.Models
         /// <summary>
         /// Data de registo do utilizador
         /// </summary>
+        [Display(Name="Data de criação")]
         public DateTime DataInicio { get; set; }
     }
 }

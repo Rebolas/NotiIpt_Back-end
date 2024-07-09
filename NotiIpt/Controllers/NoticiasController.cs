@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NotiIpt.Data;
 using NotiIpt.Models;
+using NotiIpt.ViewModels;
 
 namespace NotiIpt.Controllers
 {
@@ -45,8 +46,7 @@ namespace NotiIpt.Controllers
                 return NotFound();
             }
 
-            var noticias = await _context.Noticias
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var noticias = await _context.Noticias.FirstOrDefaultAsync(m => m.Id == id);
             if (noticias == null)
             {
                 return NotFound();
@@ -56,10 +56,12 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Noticias/Create
+        [HttpGet]
         public async Task <IActionResult> Create()
         {
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
-            return View();
+            NoticiasFotosViewMo noti = new NoticiasFotosViewMo();
+            return View(noti);
         }
 
         // POST: Noticias/Create
@@ -67,7 +69,7 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Titulo,Texto,DataEscrita,CategoriaFK")] Noticias noticias)
+        public async Task<IActionResult> Create(NoticiasFotosViewMo noticia, IFormFile ListaFotos)
         {
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             // [Bind] - anotação para indicar que dados, vindos da View,
@@ -83,6 +85,8 @@ namespace NotiIpt.Controllers
             //verifica se existe ficheiro
             if (Fotos != null) 
             {
+                int fotoIndex = 0;
+
                 foreach (var foto in Fotos)
                 {
                     if (!(foto.ContentType == "image/png" || foto.ContentType == "image/jpeg"))
@@ -93,13 +97,13 @@ namespace NotiIpt.Controllers
                     }
                     else
                     {
-                        Guid g = Guid.NewGuid();
-                        nomeImagem = g.ToString();
+                        nomeImagem = $"{noticia.Nome}_{fotoIndex++}";
                         // obter a extensão do nome do ficheiro
                         string extensao = Path.GetExtension(foto.FileName);
                         nomeImagem += extensao;
+
                         Fotos f = new Fotos(nomeImagem);
-                        noticias.ListaFotos.Add(f);
+                        noticia.Noticias.ListaFotos.Add(f);
                         mapFotos.Add(f, foto);
                         haImagem = true;
                     }
@@ -108,7 +112,9 @@ namespace NotiIpt.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(noticias);
+                Noticias n = noticia.Noticias;
+                _context.Add(n);
+                n.DataEscrita = DateTime.Now; // Atribui a data e hora atual
                 await _context.SaveChangesAsync();
                 // se há ficheiro de imagem,
                 // vamos guardar no disco rígido do servidor
@@ -127,23 +133,22 @@ namespace NotiIpt.Controllers
                     foreach (KeyValuePair<Fotos, IFormFile> i in mapFotos)
                     {
                         localImagem = Path.Combine(localImagem, i.Key.Nome);
-                        using var stream = new FileStream(
-                            localImagem, FileMode.Create);
+                        using var stream = new FileStream(localImagem, FileMode.Create);
                         await i.Value.CopyToAsync(stream);
                         localImagem = _webHostEnvironment.WebRootPath;
                         localImagem = Path.Combine(localImagem, "Imagens");
                     }
-                    //Acho que falta aqui coisas
                 }
                 // redireciona o utilizador para a página Index
                 return RedirectToAction(nameof(Index));
             }
             // se cheguei aqui é pq alguma coisa correu mal
             // volta à View com os dados fornecidos pela View
-            return View(noticias);
+            return View(noticia);
         }
 
         // GET: Noticias/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
@@ -151,13 +156,18 @@ namespace NotiIpt.Controllers
             {
                 return NotFound();
             }
-
-            var noticias = await _context.Noticias.FindAsync(id);
+            //lista de noticias
+            var noticias = await _context.Noticias.Include(f => f.ListaFotos).Include(f => f.Categoria).Where(f => f.Id == id).FirstAsync();
             if (noticias == null)
             {
                 return NotFound();
             }
-            return View(noticias);
+
+            ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
+            NoticiasFotosViewMo noti = new NoticiasFotosViewMo();
+            noti.Noticias = noticias;
+
+            return View(noti);
         }
 
         // POST: Noticias/Edit/5
@@ -165,39 +175,114 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Texto,DataEscrita,CategoriaFK")] Noticias noticias)
+        public async Task<IActionResult> Edit(int id, NoticiasFotosViewMo noticia, IFormFile ListaFotos)
         {
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
-            if (id != noticias.Id)
+            // [Bind] - anotação para indicar que dados, vindos da View,
+            //          devem ser 'aproveitados'
+
+            //Recebe ficheiro do utilizador
+            var Fotos = HttpContext.Request.Form.Files;
+            string msgErro = "";
+            //vars. auxiliares
+            string nomeImagem = "";
+            bool haImagem = false;
+            Dictionary<Fotos, IFormFile> mapFotos = new Dictionary<Fotos, IFormFile>();
+            //verifica se existe ficheiro
+            if (Fotos != null)
             {
-                return NotFound();
+                int fotoIndex = 0;
+
+                foreach (var foto in Fotos)
+                {
+                    if (!(foto.ContentType == "image/png" || foto.ContentType == "image/jpeg"))
+                    {
+                        msgErro = "A imagem tem de ser do tipo png ou jpeg!";
+                        ModelState.AddModelError("Foto", msgErro);
+
+                    }
+                    else
+                    {
+                        nomeImagem = $"{noticia.Nome}_{fotoIndex++}";
+                        // obter a extensão do nome do ficheiro
+                        string extensao = Path.GetExtension(foto.FileName);
+                        nomeImagem += extensao;
+
+                        Fotos f = new Fotos(nomeImagem);
+                        noticia.Noticias.ListaFotos.Add(f);
+                        mapFotos.Add(f, foto);
+                        haImagem = true;
+                    }
+                }
             }
 
             if (ModelState.IsValid)
             {
-                try
+
+                Noticias n = noticia.Noticias;
+                _context.Update(n);
+                n.DataEscrita = DateTime.Now; // Atribui a data e hora atual
+                await _context.SaveChangesAsync();
+                // se há ficheiro de imagem,
+                // vamos guardar no disco rígido do servidor
+                if (haImagem)
                 {
-                    _context.Update(noticias);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!NoticiasExists(noticias.Id))
+                    // determinar onde se vai guardar a imagem
+                    string localImagem = _webHostEnvironment.WebRootPath;
+                    // já sei o caminho até à pasta wwwroot
+                    // especifico onde vou guardar a imagem
+                    localImagem = Path.Combine(localImagem, "Imagens");
+                    // e, existe a pasta 'Imagens'?
+                    if (!Directory.Exists(localImagem))
                     {
-                        return NotFound();
+                        Directory.CreateDirectory(localImagem);
                     }
-                    else
+                    foreach (KeyValuePair<Fotos, IFormFile> i in mapFotos)
                     {
-                        throw;
+                        localImagem = Path.Combine(localImagem, i.Key.Nome);
+                        using var stream = new FileStream(localImagem, FileMode.Create);
+                        await i.Value.CopyToAsync(stream);
+                        localImagem = _webHostEnvironment.WebRootPath;
+                        localImagem = Path.Combine(localImagem, "Imagens");
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                TempData["atualizado"] = "Noticia " + n.Titulo + " atualizada com sucesso!";
+                // redireciona o utilizador para a página Index
+                return RedirectToAction(nameof(Edit));
             }
-            return View(noticias);
+            // se cheguei aqui é pq alguma coisa correu mal
+            // volta à View com os dados fornecidos pela View
+            return View(noticia);
         }
 
-        // GET: Noticias/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpPost]
+        public async Task<IActionResult> DeleteFoto(int fotoId, int noticiaId)
+        {
+            var foto = await _context.Fotos.FindAsync(fotoId);
+            if (foto != null)
+            {
+                // Caminho da imagem no servidor
+                string caminhoImagem = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", foto.Nome);
+
+                // Verificar se o arquivo existe
+                if (System.IO.File.Exists(caminhoImagem))
+                {
+                    // Apagar o arquivo
+                    System.IO.File.Delete(caminhoImagem);
+                }
+
+                // Remover a imagem da base de dados
+                _context.Fotos.Remove(foto);
+                await _context.SaveChangesAsync();
+            }
+
+            // Redirecionar para a página de edição da notícia
+            return RedirectToAction("Edit", new { id = noticiaId });
+        }
+    
+
+    // GET: Noticias/Delete/5
+    public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {

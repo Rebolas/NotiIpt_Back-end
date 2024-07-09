@@ -1,44 +1,102 @@
-﻿@model NotiIpt.Models.Noticias
+﻿@model NotiIpt.ViewModels.NoticiasFotosViewMo
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<div>
+    <form asp-action="Index" method="get">
+        <button type="submit" class="btn btn-danger"> <i class="bi bi-arrow-left"></i> Voltar</button>
+    </form>
 
-<h4>Noticias</h4>
+    <h1 class="text-center">Editar Notícia</h1>
+</div>
+@if (TempData["atualizado"] != null)
+{
+    <div class="alert alert-success alert-dismissible text-center fade show" role="alert">
+        <strong>@TempData["atualizado"]</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+<div class="d-flex justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Noticias.Id" />
             <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
+                <label asp-for="Noticias.Titulo" class="control-label"></label>
+                <input asp-for="Noticias.Titulo" class="form-control" />
+                <span asp-validation-for="Noticias.Titulo" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
-                <label asp-for="Texto" class="control-label"></label>
-                <input asp-for="Texto" class="form-control" />
-                <span asp-validation-for="Texto" class="text-danger"></span>
+                <label asp-for="Noticias.Texto" class="control-label"></label>
+                <textarea asp-for="Noticias.Texto" class="form-control"></textarea>
+                <span asp-validation-for="Noticias.Texto" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
-                <label asp-for="DataEscrita" class="control-label"></label>
-                <input asp-for="DataEscrita" class="form-control" />
-                <span asp-validation-for="DataEscrita" class="text-danger"></span>
+                Nome da Imagem
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                Adicionar Fotos
+                <input multiple type="file" name="ListaFotos" accept=".png,.jpg,.jpeg" class="form-control" />
+                <span asp-validation-for="Noticias.ListaFotos" class="text-danger"></span>
+            </div>
+            <br />
+            @Html.LabelFor(m => m.Noticias.CategoriaFK)
+            <select class="form-select" asp-for="Noticias.CategoriaFK" aria-label="Escolher Categoria">
+                <option value="@null">Selecione uma Categoria</option>
+                @foreach (var cat in ViewData["CategoriaFK"] as List<Categorias>)
+                {
+                    @if (cat.Id == Model.Noticias.CategoriaFK){
+                    <option selected value="@cat.Id">@cat.Categoria</option>
+                    }else{
+                    <option value="@cat.Id">@cat.Categoria</option>
+                    }
+                }
+            </select>
+           
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
             </div>
         </form>
+        <h2>Imagens Associadas</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var foto in @Model.Noticias.ListaFotos)
+                {
+                    <tr>
+                        <td>
+                            <img src="@Url.Content("~/Imagens/" + foto.Nome)" alt="Foto" style="max-height: 100px;" />
+                        </td>
+                        <td>
+                            <form asp-action="DeleteFoto" method="post">
+                                <input type="hidden" name="noticiaId" value="@Model.Noticias.Id" />
+                                <input type="hidden" name="fotoId" value="@foto.Id" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

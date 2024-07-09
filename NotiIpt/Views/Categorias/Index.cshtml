@@ -3,11 +3,13 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Index</h1>
-
+ 
+<h1 class="text-center">Categorias existentes</h1>
+<br/>
 <p>
-    <a asp-action="Create">Create New</a>
+    <form asp-action="Create" method="get">
+        <button type="submit" class="btn btn-primary">Adicionar Categoria</button>
+    </form>
 </p>
 <table class="table">
     <thead>
@@ -25,9 +27,12 @@
                 @Html.DisplayFor(modelItem => item.Categoria)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <form asp-action="Edit" method="get" asp-route-id="@item.Id" class="d-inline">
+                        <button type="submit" class="btn btn-primary">Editar</button>
+                    </form>
+                    <form asp-action="Delete" method="get" asp-route-id="@item.Id" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
             </td>
         </tr>
 }

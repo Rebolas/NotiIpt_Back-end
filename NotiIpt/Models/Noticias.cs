@@ -22,14 +22,21 @@ namespace NotiIpt.Models
         /// <summary>
         /// Titulo da noticia
         /// </summary>
+        [Display(Name="Título")]
         public string? Titulo { get; set; }
         /// <summary>
         /// Texto da noticia
         /// </summary>
         public string? Texto { get; set; }
+
+        /// <summary>
+        /// Data de Edição da noticia
+        /// </summary>
+        public DateTime? DataEdicao { get; set; }
         /// <summary>
         /// Data em que a noticia foi publicada
         /// </summary>
+        [Display(Name="Data de criação")]
         public DateTime DataEscrita { get; set; }
 
         /// <summary>

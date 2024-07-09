@@ -25,7 +25,7 @@ namespace NotiIpt.Models
         [Key]
         public int Id { get; set; }
         /// <summary>
-        /// Nome da Foto
+        /// Nome do ficheiro que contém a Foto
         /// </summary>
         public string? Nome { get; set; }
         /// <summary>
