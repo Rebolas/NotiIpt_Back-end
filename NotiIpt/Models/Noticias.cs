@@ -11,6 +11,7 @@ namespace NotiIpt.Models
         /// </summary>
         public Noticias()
         {
+            this.DataEscrita = DateTime.Now;
             ListaAutores = new HashSet<Utilizadores>();
             ListaFotos = new HashSet<Fotos>();
         }
@@ -54,6 +55,5 @@ namespace NotiIpt.Models
         /// Lista de fotos associadas a uma noticia
         /// </summary>
         public ICollection<Fotos> ListaFotos { get; set; }
-
     }
 }

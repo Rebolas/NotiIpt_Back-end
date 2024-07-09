@@ -114,7 +114,6 @@ namespace NotiIpt.Controllers
             {
                 Noticias n = noticia.Noticias;
                 _context.Add(n);
-                n.DataEscrita = DateTime.Now; // Atribui a data e hora atual
                 await _context.SaveChangesAsync();
                 // se há ficheiro de imagem,
                 // vamos guardar no disco rígido do servidor
@@ -221,7 +220,8 @@ namespace NotiIpt.Controllers
 
                 Noticias n = noticia.Noticias;
                 _context.Update(n);
-                n.DataEscrita = DateTime.Now; // Atribui a data e hora atual
+                _context.Entry(n).Property(n => n.DataEscrita).IsModified = false;
+                n.DataEdicao = DateTime.Now; // Atribui a data e hora atual ao atributo DataEdicao
                 await _context.SaveChangesAsync();
                 // se há ficheiro de imagem,
                 // vamos guardar no disco rígido do servidor
