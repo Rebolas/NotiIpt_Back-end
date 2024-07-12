@@ -220,8 +220,10 @@ namespace NotiIpt.Controllers
 
                 Noticias n = noticia.Noticias;
                 _context.Update(n);
+                //mantém a data de criação original da noticia
                 _context.Entry(n).Property(n => n.DataEscrita).IsModified = false;
-                n.DataEdicao = DateTime.Now; // Atribui a data e hora atual ao atributo DataEdicao
+                // Atribui a data e hora atual ao atributo DataEdicao
+                n.DataEdicao = DateTime.Now; 
                 await _context.SaveChangesAsync();
                 // se há ficheiro de imagem,
                 // vamos guardar no disco rígido do servidor
@@ -251,7 +253,7 @@ namespace NotiIpt.Controllers
                 return RedirectToAction(nameof(Edit));
             }
             // se cheguei aqui é pq alguma coisa correu mal
-            // volta à View com os dados fornecidos pela View
+            // volta à View com os dados fornecidos pela Vie
             return View(noticia);
         }
 
