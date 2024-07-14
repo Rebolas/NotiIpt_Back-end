@@ -35,6 +35,9 @@
                     <form asp-action="Edit" method="get" asp-route-id="@item.Id" class="d-inline">
                         <button type="submit" class="btn btn-primary">Editar</button>
                     </form>
+                        <form asp-action="Details" method="get" asp-route-id="@item.Id" class="d-inline">
+                            <button type="submit" class="btn btn-primary" class="d-inline">Detalhes</button>
+                        </form>
                     <form asp-action="Delete" method="get" asp-route-id="@item.Id" class="d-inline">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>

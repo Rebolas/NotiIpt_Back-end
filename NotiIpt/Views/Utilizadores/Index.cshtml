@@ -51,12 +51,14 @@
                 @Html.DisplayFor(modelItem => item.DataInicio)
             </td>
             <td>
+               @if (User.IsInRole("Admin")) {
                 <form asp-action="Details" method="get" asp-route-id="@item.Id" class="d-inline">
                     <button type="submit" class="btn btn-primary" class="d-inline">Detalhes</button>
                 </form>
                 <form asp-action="Delete" method="post" asp-route-id="@item.Id" class="d-inline">
                   <button type="submit" class="btn btn-danger" class="d-inline">Delete</button>
                 </form>
+               }
             </td>
         </tr>
 }

@@ -30,8 +30,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Fotos" asp-action="Index">Fotos</a>
                         </li>
                         <li class="nav-item">
-                            @if (User.Identity.IsAuthenticated)
-                            {
+                            @if (User.IsInRole("Admin")) {
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Utilizadores" asp-action="Index">Utilizadores</a>
                             }
                         </li>

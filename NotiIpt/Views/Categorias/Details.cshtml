@@ -1,0 +1,35 @@
+﻿@model NotiIpt.Models.Categorias
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="text-center">Detalhes da Foto</h1>
+
+<div class="d-inline">
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Categoria)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Categoria)
+        </dd>
+    </dl>
+</div>
+<div>
+    Noticias:
+    @foreach (var noti in (List<Noticias>)TempData["Noticias"])
+                {
+                    <tr>
+                        <td>
+                            <a class="ms-5" href="/Noticias/Details/@noti.Id">@noti.Titulo,</a>
+                        </td>
+                    </tr>
+                }
+</div>
+<br/>
+<div>
+    <form asp-action="Index" method="get">
+        <button type="submit" class="btn btn-danger"> <i class="bi bi-arrow-left"></i> Voltar</button>
+    </form>
+</div>

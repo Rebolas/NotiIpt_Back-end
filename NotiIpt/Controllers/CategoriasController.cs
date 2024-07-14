@@ -38,12 +38,13 @@ namespace NotiIpt.Controllers
             }
 
             var categorias = await _context.Categorias
+                .Include(c => c.ListaNoticias)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (categorias == null)
             {
                 return NotFound();
             }
-
+            TempData["Noticias"]=await _context.Noticias.Where(c => c.CategoriaFK==id).ToListAsync();
             return View(categorias);
         }
 

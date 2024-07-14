@@ -8,51 +8,51 @@ using Microsoft.EntityFrameworkCore;
 using NotiIpt.Data;
 using NotiIpt.Models;
 
-namespace NotiIpt
+namespace NotiIpt.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NoticiasController : ControllerBase
+    public class Fotos1Controller : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public NoticiasController(ApplicationDbContext context)
+        public Fotos1Controller(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Noticias
+        // GET: api/Fotos1
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Noticias>>> GetNoticias()
+        public async Task<ActionResult<IEnumerable<Fotos>>> GetFotos()
         {
-            return await _context.Noticias.ToListAsync();
+            return await _context.Fotos.ToListAsync();
         }
 
-        // GET: api/Noticias/5
+        // GET: api/Fotos1/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Noticias>> GetNoticias(int id)
+        public async Task<ActionResult<Fotos>> GetFotos(int id)
         {
-            var noticias = await _context.Noticias.FindAsync(id);
+            var fotos = await _context.Fotos.FindAsync(id);
 
-            if (noticias == null)
+            if (fotos == null)
             {
                 return NotFound();
             }
 
-            return noticias;
+            return fotos;
         }
 
-        // PUT: api/Noticias/5
+        // PUT: api/Fotos1/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutNoticias(int id, Noticias noticias)
+        public async Task<IActionResult> PutFotos(int id, Fotos fotos)
         {
-            if (id != noticias.Id)
+            if (id != fotos.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(noticias).State = EntityState.Modified;
+            _context.Entry(fotos).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace NotiIpt
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!NoticiasExists(id))
+                if (!FotosExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace NotiIpt
             return NoContent();
         }
 
-        // POST: api/Noticias
+        // POST: api/Fotos1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Noticias>> PostNoticias(Noticias noticias)
+        public async Task<ActionResult<Fotos>> PostFotos(Fotos fotos)
         {
-            _context.Noticias.Add(noticias);
+            _context.Fotos.Add(fotos);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetNoticias", new { id = noticias.Id }, noticias);
+            return CreatedAtAction("GetFotos", new { id = fotos.Id }, fotos);
         }
 
-        // DELETE: api/Noticias/5
+        // DELETE: api/Fotos1/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteNoticias(int id)
+        public async Task<IActionResult> DeleteFotos(int id)
         {
-            var noticias = await _context.Noticias.FindAsync(id);
-            if (noticias == null)
+            var fotos = await _context.Fotos.FindAsync(id);
+            if (fotos == null)
             {
                 return NotFound();
             }
 
-            _context.Noticias.Remove(noticias);
+            _context.Fotos.Remove(fotos);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool NoticiasExists(int id)
+        private bool FotosExists(int id)
         {
-            return _context.Noticias.Any(e => e.Id == id);
+            return _context.Fotos.Any(e => e.Id == id);
         }
     }
 }

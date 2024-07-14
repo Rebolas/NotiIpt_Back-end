@@ -62,7 +62,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Noticias}/{action=Index}/{id?}");
 app.MapRazorPages();
-
+app.MapControllers();
 app.UseStatusCodePages(async context =>
 {
     if (context.HttpContext.Response.StatusCode == 404)
