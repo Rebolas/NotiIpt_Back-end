@@ -8,7 +8,7 @@
 <hr />
 
 <div class="d-flex justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-6 text">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <hr />
             <br />
@@ -28,9 +28,6 @@
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            @* vamos aqui recolher os dados específicos do Professor *@
-            <div class="col-md-6 col-md-offset-2">
-                @* vamos aqui recolher os dados específicos do Professor *@
                 <div class="form-floating mb-3">
                     <input asp-for="Input.Utilizador.Nome" class="form-control" aria-required="true" />
                     <label asp-for="Input.Utilizador.Nome"></label>
@@ -46,7 +43,6 @@
                     <label asp-for="Input.Utilizador.Contacto"></label>
                     <span asp-validation-for="Input.Utilizador.Contacto" class="text-danger"></span>
                 </div>
-            </div>
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>

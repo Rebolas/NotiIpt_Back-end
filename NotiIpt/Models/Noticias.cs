@@ -43,9 +43,10 @@ namespace NotiIpt.Models
         /// <summary>
         /// Chave forasteira para categoria associada à noticia
         /// </summary>
+        [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
         [Display(Name = "Categoria")]
         [ForeignKey(nameof(Categoria))]
-        public int CategoriaFK  { get; set; }
+        public int CategoriaFK { get; set; }
         public Categorias Categoria { get; set; }
         /// <summary>
         /// Lista de autores associados a uma noticia

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,6 +15,10 @@ using NotiIpt.ViewModels;
 
 namespace NotiIpt.Controllers
 {
+    [Authorize]
+    // qq tarefa desta classe só pode ser efetuada
+    // por pessoas autorizadas (ie. autenticadas)
+    // exceto se se criar uma exceção
     public class NoticiasController : Controller
     {
         /// <summary>
@@ -32,21 +37,28 @@ namespace NotiIpt.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+
         // GET: Noticias
+        /// <summary>
+        /// mostra todos os cursos existentes na BD
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]// esta anotação isenta da obrigação
+                        // do utilizador estar autenticado
         public async Task<IActionResult> Index()
         {
             return View(await _context.Noticias.Include(c => c.Categoria).ToListAsync());
         }
 
         // GET: Noticias/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            var noticias = await _context.Noticias.FirstOrDefaultAsync(m => m.Id == id);
+            var noticias = await _context.Noticias.Include(f => f.ListaFotos).Include(c => c.Categoria).FirstOrDefaultAsync(m => m.Id == id);
             if (noticias == null)
             {
                 return NotFound();
@@ -57,7 +69,7 @@ namespace NotiIpt.Controllers
 
         // GET: Noticias/Create
         [HttpGet]
-        public async Task <IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             NoticiasFotosViewMo noti = new NoticiasFotosViewMo();
@@ -83,7 +95,7 @@ namespace NotiIpt.Controllers
             bool haImagem = false;
             Dictionary<Fotos, IFormFile> mapFotos = new Dictionary<Fotos, IFormFile>();
             //verifica se existe ficheiro
-            if (Fotos != null) 
+            if (Fotos != null)
             {
                 int fotoIndex = 0;
 
@@ -93,7 +105,7 @@ namespace NotiIpt.Controllers
                     {
                         msgErro = "A imagem tem de ser do tipo png ou jpeg!";
                         ModelState.AddModelError("Foto", msgErro);
-                        
+
                     }
                     else
                     {
@@ -148,8 +160,9 @@ namespace NotiIpt.Controllers
 
         // GET: Noticias/Edit/5
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, List<string> ListaNotFotos)
         {
+
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             if (id == null)
             {
@@ -161,7 +174,8 @@ namespace NotiIpt.Controllers
             {
                 return NotFound();
             }
-
+            var fotos = await _context.Fotos.Where(f => !noticias.ListaFotos.Select(r => r.Id).Contains(f.Id)).ToListAsync();
+            TempData["fotos"] = fotos;
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             NoticiasFotosViewMo noti = new NoticiasFotosViewMo();
             noti.Noticias = noticias;
@@ -174,7 +188,7 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, NoticiasFotosViewMo noticia, IFormFile ListaFotos)
+        public async Task<IActionResult> Edit(int id, NoticiasFotosViewMo noticia, IFormFile ListaFotos, List<string> ListaNotFotos)
         {
             ViewData["CategoriaFK"] = await _context.Categorias.ToListAsync();
             // [Bind] - anotação para indicar que dados, vindos da View,
@@ -217,13 +231,17 @@ namespace NotiIpt.Controllers
 
             if (ModelState.IsValid)
             {
-
+                ICollection<Fotos> f = await _context.Fotos.Where(f => ListaNotFotos.Contains(f.Nome)).ToListAsync();
                 Noticias n = noticia.Noticias;
+                foreach (var g in f)
+                {
+                    n.ListaFotos.Add(g);
+                }
                 _context.Update(n);
                 //mantém a data de criação original da noticia
                 _context.Entry(n).Property(n => n.DataEscrita).IsModified = false;
                 // Atribui a data e hora atual ao atributo DataEdicao
-                n.DataEdicao = DateTime.Now; 
+                n.DataEdicao = DateTime.Now;
                 await _context.SaveChangesAsync();
                 // se há ficheiro de imagem,
                 // vamos guardar no disco rígido do servidor
@@ -258,6 +276,28 @@ namespace NotiIpt.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> RemoveFoto(int fotoId, int noticiaId)
+        {
+            var foto = await _context.Fotos.FindAsync(fotoId);
+            if (foto != null)
+            {
+                // Caminho da imagem no servidor
+                string caminhoImagem = Path.Combine(_webHostEnvironment.WebRootPath, "Imagens", foto.Nome);
+
+                // Remover a imagem da lista de fotos da notícia
+                var noticia = await _context.Noticias.Include(n => n.ListaFotos).FirstOrDefaultAsync(n => n.Id == noticiaId);
+                if (noticia != null)
+                {
+                    noticia.ListaFotos.Remove(foto);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // Redirecionar para a página de edição da notícia
+            return RedirectToAction("Edit", new { id = noticiaId });
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteFoto(int fotoId, int noticiaId)
         {
             var foto = await _context.Fotos.FindAsync(fotoId);
@@ -281,10 +321,10 @@ namespace NotiIpt.Controllers
             // Redirecionar para a página de edição da notícia
             return RedirectToAction("Edit", new { id = noticiaId });
         }
-    
 
-    // GET: Noticias/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+
+        // GET: Noticias/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {

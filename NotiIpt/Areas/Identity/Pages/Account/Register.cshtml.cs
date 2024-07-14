@@ -157,7 +157,7 @@ namespace NotiIpt.Areas.Identity.Pages.Account
                 {
                     // houve sucesso na criação da conta de autenticação
                     _logger.LogInformation("User created a new account with password.");
-
+                    await _userManager.AddToRoleAsync(user, "Funcionario");
                     // **********************************************
                     // vamos escrever na BD os dados do Professor
                     // na prática, quero guardar na BD os
@@ -168,6 +168,7 @@ namespace NotiIpt.Areas.Identity.Pages.Account
                     // que fará a 'ponte' entre a BD
                     // de autenticação e a BD do 'negócio'
                     Input.Utilizador.UserId = user.Id;
+                    Input.Utilizador.Email = Input.Email;
 
                     try
                     {

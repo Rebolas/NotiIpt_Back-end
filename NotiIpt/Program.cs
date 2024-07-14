@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using NotiIpt.Data;
 using NotiIpt.Controllers;
+using Aulas.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    // Invocar o seed da BD
+    app.UseItToSeedSqlServer();
 }
 else
 {
@@ -57,7 +60,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Noticias}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.UseStatusCodePages(async context =>

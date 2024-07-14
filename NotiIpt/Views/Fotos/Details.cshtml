@@ -4,11 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1 class="text-center">Detalhes da Foto</h1>
 
-<div>
-    <h4>Fotos</h4>
-    <hr />
+<div class="d-flex justify-content-center">
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Nome)
@@ -16,9 +14,14 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Nome)
         </dd>
+        <dd class="col-sm-10">
+            <img src="@Url.Content("~/Imagens/" + @Model.Nome)" alt="Foto" style="width: 100%;" />
+        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <form asp-action="Index" method="get">
+        <button type="submit" class="btn btn-danger"> <i class="bi bi-arrow-left"></i> Voltar</button>
+    </form>
 </div>
+

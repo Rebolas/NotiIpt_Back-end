@@ -48,19 +48,32 @@
                 <span asp-validation-for="Noticias.ListaFotos" class="text-danger"></span>
             </div>
             <br />
+            <div class="form-group">
+                Associe fotos existentes
+                <select class="form-select" multiple name="ListaNotFotos" aria-label="Escolher Fotos">
+                    @foreach (var foto in TempData["fotos"] as List<Fotos>)
+                    {
+                        <option value="@foto.Nome">@foto.Nome</option>
+                    }
+                </select>
+            </div>
+            <br />
             @Html.LabelFor(m => m.Noticias.CategoriaFK)
             <select class="form-select" asp-for="Noticias.CategoriaFK" aria-label="Escolher Categoria">
                 <option value="@null">Selecione uma Categoria</option>
                 @foreach (var cat in ViewData["CategoriaFK"] as List<Categorias>)
                 {
-                    @if (cat.Id == Model.Noticias.CategoriaFK){
-                    <option selected value="@cat.Id">@cat.Categoria</option>
-                    }else{
-                    <option value="@cat.Id">@cat.Categoria</option>
+                    @if (cat.Id == Model.Noticias.CategoriaFK)
+                    {
+                        <option selected value="@cat.Id">@cat.Categoria</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.Id">@cat.Categoria</option>
                     }
                 }
             </select>
-           
+
             <br />
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-primary" />
@@ -82,10 +95,15 @@
                             <img src="@Url.Content("~/Imagens/" + foto.Nome)" alt="Foto" style="max-height: 100px;" />
                         </td>
                         <td>
-                            <form asp-action="DeleteFoto" method="post">
+                            <form asp-action="DeleteFoto" method="post" class="d-inline">
                                 <input type="hidden" name="noticiaId" value="@Model.Noticias.Id" />
                                 <input type="hidden" name="fotoId" value="@foto.Id" />
                                 <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                            <form asp-action="RemoveFoto" method="post" class="d-inline">
+                                <input type="hidden" name="fotoId" value="@foto.Id" />
+                                <input type="hidden" name="noticiaId" value="@Model.Noticias.Id" />
+                                <button type="submit" class="btn btn-primary ">Desassociar</button>
                             </form>
                         </td>
                     </tr>

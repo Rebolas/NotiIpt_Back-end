@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using NotiIpt.Models;
 
 namespace NotiIpt.Controllers
 {
+    [Authorize]
     public class UtilizadoresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,13 +22,16 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Utilizadores
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Utilizadores.ToListAsync());
+            var g = await _context.Utilizadores.ToListAsync();
+            return View(g);
         }
 
         // GET: Utilizadores/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(string? id)
         {
             if (id == null)
             {
@@ -68,7 +73,7 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Utilizadores/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null)
             {
@@ -88,7 +93,7 @@ namespace NotiIpt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,ImagemPerf,Email,Contacto,Idade,Tipo,DataInicio")] Utilizadores utilizadores)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,Nome,ImagemPerf,Email,Contacto,Idade,Tipo,DataInicio")] Utilizadores utilizadores)
         {
             if (id != utilizadores.Id)
             {
@@ -119,7 +124,7 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Utilizadores/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (id == null)
             {
@@ -139,7 +144,7 @@ namespace NotiIpt.Controllers
         // POST: Utilizadores/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var utilizadores = await _context.Utilizadores.FindAsync(id);
             if (utilizadores != null)
@@ -151,7 +156,7 @@ namespace NotiIpt.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UtilizadoresExists(int id)
+        private bool UtilizadoresExists(string id)
         {
             return _context.Utilizadores.Any(e => e.Id == id);
         }

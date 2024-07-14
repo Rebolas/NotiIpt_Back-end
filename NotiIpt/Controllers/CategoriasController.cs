@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using NotiIpt.Models;
 
 namespace NotiIpt.Controllers
 {
+    [Authorize]
     public class CategoriasController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,12 +22,14 @@ namespace NotiIpt.Controllers
         }
 
         // GET: Categorias
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Categorias.ToListAsync());
         }
 
         // GET: Categorias/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

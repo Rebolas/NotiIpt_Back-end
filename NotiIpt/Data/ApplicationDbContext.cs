@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NotiIpt.Models;
 
@@ -9,6 +10,26 @@ namespace NotiIpt.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+        }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            /* Esta instrução importa tudo o que está pre-definido
+             * na super classe
+             */
+            base.OnModelCreating(builder);
+
+            /* Adição de dados à Base de Dados
+             * Esta forma é PERSISTENTE, pelo que apenas deve ser utilizada em 
+             * dados que perduram da fase de 'desenvolvimento' para a fase de 'produção'.
+             * Implica efetuar um 'Add-Migration'
+             * 
+             * Atribuir valores às ROLES
+             */
+            builder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Id = "p", Name = "Funcionario", NormalizedName = "FUNCIONARIO" },
+                new IdentityRole { Id = "admin", Name = "Admin", NormalizedName = "ADMIN" }
+                );
+
         }
         /// <summary>
         /// tabela Utilizadores

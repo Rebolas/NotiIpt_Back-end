@@ -6,12 +6,14 @@
 
 <h1 class ="text-center">Fotos existentes</h1>
 <br/>
-<p>
-    <form asp-action="Create" method="get">
-        <button type="submit" class="btn btn-primary">Adicionar Foto</button>
-    </form>
-</p>
-
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        <form asp-action="Create" method="get">
+            <button type="submit" class="btn btn-primary">Adicionar Foto</button>
+        </form>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -28,16 +30,17 @@
                 @Html.DisplayFor(modelItem => item.Nome)
             </td>
             <td>
-                    <form asp-action="Edit" method="get" asp-route-id="@item.Id" class="d-inline">
-                        <button type="submit" class="btn btn-primary">Editar</button>
-                    </form>
+                    
                     <form asp-action="Details" method="get" asp-route-id="@item.Id" class="d-inline">
                         <button type="submit" class="btn btn-primary" class="d-inline">Detalhes</button>
                     </form>
-                    <form asp-action="Delete" method="get" asp-route-id="@item.Id" class="d-inline">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-            </td>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-action="Delete" method="get" asp-route-id="@item.Id" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    }
+                </td>
         </tr>
 }
     </tbody>

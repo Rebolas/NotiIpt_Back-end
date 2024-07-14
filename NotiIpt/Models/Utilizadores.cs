@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace NotiIpt.Models
@@ -6,13 +7,13 @@ namespace NotiIpt.Models
     /// <summary>
     /// Classe para descrever os Utilizadores existentes na redação
     /// </summary>
-    public class Utilizadores
+    public class Utilizadores : IdentityUser
     {
-        /// <summary>
-        /// Chave Primária (PK)
-        /// </summary>
-        [Key]
-        public int Id { get; set; }
+        public Utilizadores()
+        {
+            this.DataInicio = DateTime.Now;
+        }
+
         /// <summary>
         /// Nome do utilizador
         /// </summary>
@@ -21,27 +22,23 @@ namespace NotiIpt.Models
         public string Nome { get; set; }
 
         /// <summary>
-        /// Email do utilizador
-        /// </summary>
-        public int Email { get; set; }
-        /// <summary>
         /// Contacto de telemovel do utilizador
         /// </summary>
         [Display(Name = "Telemóvel")]
         [StringLength(9)]
         [RegularExpression("9[1236][0-9]{7}", ErrorMessage = "o {0} só aceita 9 digitos")]
-        public int Contacto { get; set; }
+        public string Contacto { get; set; }
         /// <summary>
         /// Idade do utilizador
         /// </summary>
         [DataType(DataType.Date)] // informa a View de como deve tratar este atributo
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
         public DateOnly DataNascimento { get; set; }
-        
+
         /// <summary>
         /// Data de registo do utilizador
         /// </summary>
-        [Display(Name="Data de criação")]
+        [Display(Name = "Data de criação")]
         public DateTime DataInicio { get; set; }
 
         /// <summary>
@@ -54,3 +51,4 @@ namespace NotiIpt.Models
         public string UserId { get; set; }
     }
 }
+
